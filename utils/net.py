@@ -12,6 +12,7 @@ import socket
 import secrets
 import threading
 import logging
+import re
 from contextlib import contextmanager
 
 import traceback
@@ -83,10 +84,11 @@ def post_request(url, headers={}, jsonData={}, timeout=5):
 
 def get_public_ip():
     LOGGER.info("Getting IP from remote service")
-    url = "https://api.ipify.org?format=json"
-    x = json.load(get_request(url))
-    LOGGER.debug(f"Received data: {json.dumps(x)}")
-    return x['ip']
+    url = "http://myip.ipip.net"
+    x = get_request(url).read().decode('utf-8')
+    LOGGER.debug(f"Received data: {x}")
+    ip =  re.findall(r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b", x)
+    return ip
 
 def valid_ip(address):
     try:
